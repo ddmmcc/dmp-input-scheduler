@@ -1,0 +1,29 @@
+{
+  "name": "dmp-input-scheduler",
+  "main": "dmp-input-scheduler.js",
+  "dependencies": {
+    "@polymer/iron-icon": "^3.0.1",
+    "@polymer/iron-icons": "^3.0.1",
+    "@polymer/paper-checkbox": "^3.1.0",
+    "@polymer/paper-dropdown-menu": "^3.0.1",
+    "@polymer/paper-icon-button": "^3.0.2",
+    "@polymer/paper-input": "^3.0.2",
+    "@polymer/paper-item": "^3.0.1",
+    "@polymer/paper-listbox": "^3.0.1",
+    "@polymer/polymer": "^3.0.0",
+    "dmp-paper-checkbox": "git+https://github.com/ddmmcc/dmp-paper-checkbox.git#semver:^3"
+  },
+  "devDependencies": {
+    "@polymer/iron-demo-helpers": "^3.1.0",
+    "@polymer/test-fixture": "^4.0.2",
+    "@webcomponents/webcomponentsjs": "^2.0.0",
+    "chai": "^4.2.0",
+    "mocha": "^6.1.4",
+    "polymer-cli": "^1.9.11",
+    "wct-mocha": "^1.0.1"
+  },
+  "scripts": {
+    "start": "node ./node_modules/polymer-cli/bin/polymer.js serve",
+    "init": "node ./node_modules/polymer-cli/bin/polymer.js init"
+  }
+}

@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>dmp-input-scheduler demo</title>
+
+    <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
+    <script src="https://unpkg.com/web-animations-js@^2.0.0/web-animations-next-lite.min.js"></script>
+
+    <script type="module">
+      import '@polymer/iron-demo-helpers/demo-pages-shared-styles';
+      import '@polymer/iron-demo-helpers/demo-snippet';
+    </script>
+
+    <script type="module" src="../dmp-input-scheduler.js"></script>
+
+    <custom-style>
+      <style is="custom-style" include="demo-pages-shared-styles">
+      </style>
+    </custom-style>
+  </head>
+  <body>
+    <div class="vertical-section-container centered">
+      <h3>Basic dmp-input-scheduler demo</h3>
+      <demo-snippet>
+        <template>
+          <button id="btn1">Validate</button>
+          <dmp-input-scheduler id="demo1" auto-validate days='["L", "M", "X", "J", "V", "S", "D"]'></dmp-input-scheduler>
+          <script>
+            const demo1 = document.querySelector("#demo1");
+            const btn1 = document.querySelector("#btn1");
+
+            btn1.addEventListener("click", (e) =>{
+              demo1.validate();
+            })
+            
+          </script>
+        </template>
+      </demo-snippet>
+    </div>
+  </body>
+</html>
