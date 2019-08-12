@@ -4,6 +4,7 @@ import "dmp-paper-checkbox/dmp-paper-checkbox.js";
 import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
 import '@polymer/paper-item/paper-item.js';
 import '@polymer/paper-listbox/paper-listbox.js';
+import { MutableData } from '@polymer/polymer/lib/mixins/mutable-data.js';
 
 /**
  * `dmp-input-scheduler`
@@ -13,7 +14,7 @@ import '@polymer/paper-listbox/paper-listbox.js';
  * @polymer
  * @demo demo/index.html
  */
-class DmpInputScheduler extends PolymerElement {
+class DmpInputScheduler extends MutableData(PolymerElement) {
   static get template() {
     return html`
       <style>
@@ -31,24 +32,42 @@ class DmpInputScheduler extends PolymerElement {
 
           --primary-color : var(--dmp-input-scheduler-primary);
           --primary-text-color : var(--dmp-input-scheduler-text);
+
+          --dmp-paper-checkbox-size: 40px;
         }
 
-        .row{
+        .row {
           display: flex;
           flex-flow: row nowrap;
           justify-content: space-between;
           margin-bottom: 10px;
         }
-        .left_column{
+        .left_column, .right_column, .center_column{
           display: flex;
-          align-items: center;          
+          align-items: center;
+          flex-flow: column nowrap;
+          justify-content: center;
+        }
+        .center_column{
+          display: flex;
+          align-items: center;
+          flex-flow: row nowrap;
+          justify-content: space-around;
+        }
+
+        .left_column .checks, .right_column .checks{
+          width: var(--dmp-paper-checkbox-size);
+        }
+
+        .center_column .dropDown {
+          width: 40%;
+          max-width: 191px;
         }
 
         .checks{
-          --paper-checkbox-size: 40px;
+          --paper-checkbox-size: var(--dmp-paper-checkbox-size);
           --paper-checkbox-radius: 8px;
           --paper-checkbox-unchecked-color : var(--dmp-input-scheduler-primary); /** border */
-
         }
 
         [data-text-disabled] {
@@ -59,10 +78,20 @@ class DmpInputScheduler extends PolymerElement {
           color: var(--dmp-input-scheduler-error);
         }
 
+        .checkRepeat{
+          text-align: right;
+          margin-right: 8px;
+          margin-bottom: 20px;
+        }
 
       </style>
       <div class="main_container">
+        <div class="title">[[title]]</div>
         <div class="error" hidden="[[!showRequiredError]]">[[errorMsg]]</div>
+        <div class="checkRepeat">
+          <span data-text-disabled$="[[!item.checked]]">Copiar todos los días igual que el primero</span>
+          <dmp-paper-checkbox data-index="0" on-click="_fullDaysSame" checked="{{allDaysTheSame}}" disabled="[[enableAllDaysTheSame]]" class="checks"></dmp-paper-checkbox>              
+        </div>
         <template is="dom-repeat" items="{{value}}">
           <div class="row">
             <div class="left_column">
@@ -70,8 +99,9 @@ class DmpInputScheduler extends PolymerElement {
               <dmp-paper-checkbox class="checks" checked="{{item.checked}}" name="[[item.name]]">
               </dmp-paper-checkbox>
             </div>
-            <div>
+            <div class="center_column">
               <paper-dropdown-menu
+                class="dropDown"
                 label="Desde"
                 on-value-changed="_onValueChange" 
                 on-selected-item-changed="_selectedItemFromChanged"
@@ -86,6 +116,7 @@ class DmpInputScheduler extends PolymerElement {
               </paper-dropdown-menu>
 
               <paper-dropdown-menu
+                class="dropDown"
                 label="Hasta"
                 on-selected-item-changed="_selectedItemToChanged"
                 auto-validate
@@ -98,16 +129,11 @@ class DmpInputScheduler extends PolymerElement {
                   </template>
                 </paper-listbox>
               </paper-dropdown-menu>
-              <div style="display: inline-block">
-                  <div data-text-disabled$="[[!item.checked]]">Todo el día</div>
-                  <dmp-paper-checkbox data-index$="[[index]]" on-click="_fullDayClicked" disabled="[[!item.checked]]" class="checks" checked="{{item.fulldayCheck}}"></dmp-paper-checkbox>              
-              </div>
-              <template is="dom-if" if="[[_indexIsZero(index)]]">
-                <div style="display: inline-block">
-                    <div data-text-disabled$="[[!item.checked]]">Todos los días iguales</div>
-                    <dmp-paper-checkbox data-index$="[[index]]" on-click="_fullDaysSame" disabled="[[_disableFullDaysSameCheck(item.checked, item.fromSelectedIndex, item.toSelectedIndex)]]" class="checks"></dmp-paper-checkbox>              
-                </div>
-              </template>
+
+            </div>
+            <div class="right_column">
+              <div data-text-disabled$="[[!item.checked]]">Todo el día</div>
+              <dmp-paper-checkbox data-index$="[[index]]" on-click="_fullDayClicked" disabled="[[!item.checked]]" class="checks" checked="{{item.fulldayCheck}}"></dmp-paper-checkbox>              
             </div>
           </div>
         </template>
@@ -116,6 +142,9 @@ class DmpInputScheduler extends PolymerElement {
   }
   static get properties() {
     return {
+      title: {
+        type: String,
+      },
       value: {
         type: Array,
         value: [],
@@ -142,6 +171,14 @@ class DmpInputScheduler extends PolymerElement {
       days: {
         type: Array,
         observer: "_constructValue"
+      },
+      enableAllDaysTheSame: {
+        type: Boolean,
+        computed: "_computeEnableAllDaysTheSame(value.0.checked, value.0.fromSelectTime, value.0.toSelectTime)"
+      },
+      allDaysTheSame: {
+        type: Boolean,
+        value: false
       },
       hours: {
         type: Array,
@@ -180,11 +217,16 @@ class DmpInputScheduler extends PolymerElement {
 
     };
   }
-
+  
   static get observers () {
     return [
       "_valueChanged(value.*)",
     ]
+  }
+  
+  _computeEnableAllDaysTheSame(checked, fromSelectTime, toSelectTime){
+    console.log("_computeEnableFullDay");
+    return !checked || !fromSelectTime || !toSelectTime;
   }
 
   _selectedItemFromChanged(e) {
@@ -214,7 +256,8 @@ class DmpInputScheduler extends PolymerElement {
     if ( e.currentTarget.checked ) {
       const index = e.currentTarget.dataset.index;
       this.set(`value.${index}.fromSelectedIndex`, 0)
-      this.set(`value.${index}.toSelectedIndex`, this.hours.length - 1)
+      this.set(`value.${index}.toSelectedIndex`, this.hours.length - 1);
+      //this.notifyPath(`value.${index}`);
     }
   }
 
@@ -224,22 +267,21 @@ class DmpInputScheduler extends PolymerElement {
 
   _fullDaysSame(e) {
     console.log(e);
-    const index = e.currentTarget.dataset.index;
-    const valFrom = this.value[index].fromSelectedIndex;
-    const valTo = this.value[index].toSelectedIndex;
-
-    if ( valFrom && valTo ){
-      this.value.forEach((item, index) => {
-        this.set(`value.${index}.checked`, true);
-        this.set(`value.${index}.fromSelectedIndex`, valFrom);
-        this.set(`value.${index}.toSelectedIndex`, valTo);
-      })
+    if ( e.currentTarget.checked ) {
+      const index = e.currentTarget.dataset.index;
+      const valFrom = this.value[index].fromSelectedIndex;
+      const valTo = this.value[index].toSelectedIndex;
+      const fulldayCheck = this.value[index].fulldayCheck;
+  
+      if ( typeof valFrom === "number" && typeof valTo === "number" ){
+        this.value.forEach((item, index) => {
+          this.set(`value.${index}.checked`, true);
+          this.set(`value.${index}.fromSelectedIndex`, valFrom);
+          this.set(`value.${index}.toSelectedIndex`, valTo);
+          this.set(`value.${index}.fulldayCheck`, fulldayCheck);
+        })
+      }
     }
-  }
-
-  _disableFullDaysSameCheck(checked, fromSelectedIndex, toSelectedIndex){
-    console.log(toSelectedIndex);
-    return !checked || !fromSelectedIndex || !toSelectedIndex;
   }
 
   ready() {
@@ -253,19 +295,51 @@ class DmpInputScheduler extends PolymerElement {
   }
 
   // TODO: no se guarda el checked de los checkboxes - lo mismo le falta el notify al warpper
-  _valueChanged(chg) { 
+  _valueChanged(chg) {
+    // if any select changed
     if ( chg.path.includes("fromSelectedIndex") || chg.path.includes("toSelectedIndex") ){
-      let arIndex = (((chg.path.match(/\.\d\./) || "")[0] || "").split(".") || [])[1] || null;
-      if ( chg.path.includes("fromSelectedIndex")  ){
-        
-        this.value[arIndex].fromSelectTime = this.hours[chg.value];
-      }else {
-        this.value[arIndex].toSelectTime = this.hours[chg.value];
-      }
-      if ( this.autoValidate) {
-        this.set(`value.${arIndex}.invalid`, this.validateRow(this.value[arIndex].checked, this.value[arIndex].fromSelectedIndex, this.value[arIndex].toSelectedIndex));
+      let indexOfValue = (((chg.path.match(/\.\d\./) || "")[0] || "").split(".") || [])[1] || null;
+      this._anySelectChanged(chg, indexOfValue, this.value[indexOfValue]);
+    }
+  }
+
+  _anySelectChanged (chg, indexOfValue, row) {
+    if ( chg.path.includes("fromSelectedIndex") ){ // from 
+      this.set(`value.${indexOfValue}.fromSelectTime`, this.hours[chg.value]);
+    }else { // to
+      this.set(`value.${indexOfValue}.toSelectTime`, this.hours[chg.value]);
+    }
+    this._shouldCheckAllDay(this.value[indexOfValue].fromSelectedIndex, this.value[indexOfValue].toSelectedIndex, indexOfValue);
+    this._shouldCheckAllDaysSame(this.value);
+    if ( this.autoValidate) {
+      this.set(`value.${indexOfValue}.invalid`, this.validateRow(this.value[indexOfValue].checked, this.value[indexOfValue].fromSelectedIndex, this.value[indexOfValue].toSelectedIndex));
+    }    
+  }
+
+  _shouldCheckAllDay(from, to, index) {
+      this.set(`value.${index}.fulldayCheck`, from === 0 && to === this.hours.length - 1);
+  }
+
+  _allDaysSameClicked() {
+    console.log("clicked all days the same")
+    this._shouldCheckAllDaysSame(this.value);
+  }
+
+  _shouldCheckAllDaysSame(value) {
+    let result = true;
+    for ( let i = 0; i < value.length; i++ ) {
+      if ( i > 0 ) {
+        let itemFrom = value[i].fromSelectedIndex;
+        let prevItemFrom = value[i-1].fromSelectedIndex;
+        let itemTo = value[i].toSelectedIndex;
+        let prevItemTo = value[i-1].toSelectedIndex;
+        if ( itemFrom !== prevItemFrom || itemTo !== prevItemTo ) {
+          result = false;
+          break;
+        }
       }
     }
+    this.set("allDaysTheSame", result);
   }
   
   validateRow(checked, fromValue, toValue) {
@@ -287,7 +361,7 @@ class DmpInputScheduler extends PolymerElement {
   }
 
   _validateRequired(items) {
-    const resultInvalid = !items.filter(item => item.fromSelected && item.toSelected)[0];
+    const resultInvalid = !items.filter(item => item.fromSelectTime && item.toSelectTime)[0];
     this.showRequiredError = resultInvalid;
     this.invalid = this.invalid && !resultInvalid ? this.invalid : resultInvalid;
   }
