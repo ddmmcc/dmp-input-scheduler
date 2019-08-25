@@ -47,6 +47,7 @@ class DmpInputScheduler extends MutableData(PolymerElement) {
           align-items: center;
           flex-flow: column nowrap;
           justify-content: center;
+          text-align: center;
         }
         .center_column{
           display: flex;
@@ -89,7 +90,7 @@ class DmpInputScheduler extends MutableData(PolymerElement) {
         <div class="title">[[title]]</div>
         <div class="error" hidden="[[!showRequiredError]]">[[errorMsg]]</div>
         <div class="checkRepeat">
-          <span data-text-disabled$="[[!item.checked]]">Copiar todos los días igual que el primero</span>
+          <span data-text-disabled$="[[enableAllDaysTheSame]]">Copiar todos los días igual que el primero</span>
           <dmp-paper-checkbox data-index="0" on-click="_fullDaysSame" checked="{{allDaysTheSame}}" disabled="[[enableAllDaysTheSame]]" class="checks"></dmp-paper-checkbox>              
         </div>
         <template is="dom-repeat" items="{{value}}">
@@ -289,14 +290,10 @@ class DmpInputScheduler extends MutableData(PolymerElement) {
     window.myelement = this;
     if ( this.autoValidate ) {
     }
-
-    // TODO: quitar, solo para pruebas
     
   }
 
-  // TODO: no se guarda el checked de los checkboxes - lo mismo le falta el notify al warpper
   _valueChanged(chg) {
-    // if any select changed
     if ( chg.path.includes("fromSelectedIndex") || chg.path.includes("toSelectedIndex") ){
       let indexOfValue = (((chg.path.match(/\.\d\./) || "")[0] || "").split(".") || [])[1] || null;
       this._anySelectChanged(chg, indexOfValue, this.value[indexOfValue]);
@@ -388,6 +385,11 @@ class DmpInputScheduler extends MutableData(PolymerElement) {
   _constructValue(days) {
     console.log("me he ejecutado");
     this.value = days.map((item) => {return {name: item, checked: false} });
+  }
+
+  reset() {
+    this.set("value", []);
+    this._constructValue(this.days);
   }
 }
 

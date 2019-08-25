@@ -27,13 +27,18 @@
       <demo-snippet>
         <template>
           <button id="btn1">Validate</button>
+          <button id="btn2">Reset</button>
           <dmp-input-scheduler id="demo1" title="Selecciona tu horario" auto-validate days='["L", "M", "X", "J", "V", "S", "D"]'></dmp-input-scheduler>
           <script>
             const demo1 = document.querySelector("#demo1");
-            const btn1 = document.querySelector("#btn1");
+            const btn2 = document.querySelector("#btn2");
 
             btn1.addEventListener("click", (e) =>{
               demo1.validate();
+            })
+
+            btn2.addEventListener("click", (e) =>{
+              demo1.reset();
             })
             
           </script>
