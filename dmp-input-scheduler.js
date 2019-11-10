@@ -149,16 +149,18 @@ class DmpInputScheduler extends MutableData(PolymerElement) {
       value: {
         type: Array,
         value: [],
+        notify: true
       },
       /** Msg error. It shows when component validate and return invalid */
       errorMsg: {
         type: String,
         value: "Please fill required fields"
       },
-      /** Proverty save the validation value */
+      /** Property save the validation value */
       invalid: {
         type: Boolean,
-        value: false
+        value: false,
+        notify: true
       },
       /** This prop is a flag to validate if required fields of the component are filled */
       required: {
