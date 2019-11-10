@@ -18,13 +18,21 @@
     "@polymer/test-fixture": "^4.0.2",
     "@webcomponents/webcomponentsjs": "^2.0.0",
     "chai": "^4.2.0",
+    "generate-changelog": "^1.8.0",
+    "husky": "^3.0.9",
     "mocha": "^6.1.4",
     "polymer-cli": "^1.9.11",
     "wct-mocha": "^1.0.1"
   },
   "scripts": {
     "start": "node ./node_modules/polymer-cli/bin/polymer.js serve",
-    "init": "node ./node_modules/polymer-cli/bin/polymer.js init"
+    "init": "node ./node_modules/polymer-cli/bin/polymer.js init",
+    "changelog": "changelog"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "rm CHANGELOG.md && npm run changelog && git add CHANGELOG.md"
+    }
   },
   "version": "0.1.0"
 }
