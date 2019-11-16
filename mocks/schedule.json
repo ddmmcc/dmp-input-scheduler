@@ -1,0 +1,57 @@
+[
+    {
+        "name": "L",
+        "checked": true,
+        "fulldayCheck": false,
+        "fromSelectedIndex": 2,
+        "fromSelectTime": "02:00",
+        "invalid": false,
+        "toSelectedIndex": 3,
+        "toSelectTime": "03:00"
+    },
+    {
+        "name": "M",
+        "checked": false,
+        "fulldayCheck": false
+    },
+    {
+        "name": "X",
+        "checked": true,
+        "fulldayCheck": false,
+        "toSelectedIndex": 4,
+        "toSelectTime": "04:00",
+        "invalid": false,
+        "fromSelectedIndex": 3,
+        "fromSelectTime": "03:00"
+    },
+    {
+        "name": "J",
+        "checked": false,
+        "fulldayCheck": false
+    },
+    {
+        "name": "V",
+        "checked": true,
+        "fulldayCheck": false,
+        "fromSelectedIndex": 2,
+        "fromSelectTime": "02:00",
+        "invalid": false,
+        "toSelectedIndex": 7,
+        "toSelectTime": "07:00"
+    },
+    {
+        "name": "S",
+        "checked": true,
+        "fulldayCheck": true,
+        "fromSelectedIndex": 0,
+        "fromSelectTime": "00:00",
+        "invalid": false,
+        "toSelectedIndex": 24,
+        "toSelectTime": "24:00"
+    },
+    {
+        "name": "D",
+        "checked": false,
+        "fulldayCheck": false
+    }
+]

@@ -40,6 +40,11 @@
             btn2.addEventListener("click", (e) =>{
               demo1.reset();
             })
+
+            const options = {method: "GET"}
+            fetch('../mocks/schedule.json', options)
+            .then(res => res.json())
+            .then(res => demo1.value = res)
             
           </script>
         </template>
