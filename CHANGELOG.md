@@ -1,4 +1,4 @@
-#### 0.1.1 (2019-11-17)
+#### 0.1.2 (2019-11-17)
 
 ##### Chores
 
@@ -18,5 +18,5 @@
 
 ##### Other Changes
 
-* //github.com/ddmmcc/dmp-input-scheduler (a97db77f)
+* //github.com/ddmmcc/dmp-input-scheduler (fbeefb5a)
 
