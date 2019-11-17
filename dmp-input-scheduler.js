@@ -23,17 +23,27 @@ class DmpInputScheduler extends MutableData(PolymerElement) {
         }
         :host {
           display: block;
-          --dmp-input-scheduler-primary :  #13C1AC;
-          --dmp-input-scheduler-secundary :  #636363;
-          --dmp-input-scheduler-text :  #636363;
-          --dmp-input-scheduler-disabled-text :  #A6A6A6;
-          --dmp-input-scheduler-error :  #DE7A7A;
-          --dmp-input-scheduler-warning :  #FFD64E;
-
-          --primary-color : var(--dmp-input-scheduler-primary);
-          --primary-text-color : var(--dmp-input-scheduler-text);
-
+          --dmp-input-scheduler-primary :  var(--primary-color);
+          --dmp-input-scheduler-secundary :  var(--primary-text-color);
+          --dmp-input-scheduler-text :  var(--primary-text-color);
+          --dmp-input-scheduler-disabled-text :  var(--secondary-text-color);
+          --dmp-input-scheduler-error :  var(--error-color);
+          --dmp-input-scheduler-warning :  var(--warning-color);
           --dmp-paper-checkbox-size: 40px;
+          --dmp-input-scheduler-right-box-size: 80px;
+
+          color: var(--dmp-input-scheduler-text);
+        }
+
+        @media(max-width: 420px) {
+          :host {
+            --dmp-input-scheduler-right-box-size: 60px;
+          }
+        }
+
+        .rightBox {
+          width: var(--dmp-input-scheduler-right-box-size);
+          color: var(--dmp-input-scheduler-text);
         }
 
         .row {
@@ -56,7 +66,7 @@ class DmpInputScheduler extends MutableData(PolymerElement) {
           justify-content: space-around;
         }
 
-        .left_column .checks, .right_column .checks{
+        .left_column .checks, .right_column .checks, .rightBox .checks{
           width: var(--dmp-paper-checkbox-size);
         }
 
@@ -81,8 +91,18 @@ class DmpInputScheduler extends MutableData(PolymerElement) {
 
         .checkRepeat{
           text-align: right;
-          margin-right: 8px;
           margin-bottom: 20px;
+          width: 100%;
+          display: flex;
+          justify-content: flex-end;
+        }
+        .check_day_name{
+          color: var(--secondary-text-color);
+        }
+
+        .checkRepeatBox {
+          display: flex;
+          justify-content: center;
         }
 
       </style>
@@ -90,15 +110,18 @@ class DmpInputScheduler extends MutableData(PolymerElement) {
         <div class="title">[[title]]</div>
         <div class="error" hidden="[[!showRequiredError]]">[[errorMsg]]</div>
         <div class="checkRepeat">
-          <span data-text-disabled$="[[enableAllDaysTheSame]]">Copiar todos los días igual que el primero</span>
-          <dmp-paper-checkbox data-index="0" on-click="_fullDaysSame" checked="{{allDaysTheSame}}" disabled="[[enableAllDaysTheSame]]" class="checks"></dmp-paper-checkbox>              
+          <div style='display: inline-block; margin-right: 20px;' data-text-disabled$="[[enableAllDaysTheSame]]">Copiar todos los días igual que el primero</div>
+          <div style='display: inline-block'>
+              <div class='checkRepeatBox rightBox'>
+                <dmp-paper-checkbox data-index="0" on-click="_fullDaysSame" checked="{{allDaysTheSame}}" disabled="[[enableAllDaysTheSame]]" class="checks"></dmp-paper-checkbox>              
+              </div>
+        </div>
         </div>
         <template is="dom-repeat" items="{{value}}">
           <div class="row">
             <div class="left_column">
-              [[item.name]]
-              <dmp-paper-checkbox class="checks" checked="{{item.checked}}" name="[[item.name]]">
-              </dmp-paper-checkbox>
+              <span class='check_day_name'>[[item.name]]</span>
+              <dmp-paper-checkbox class="checks" checked="{{item.checked}}" name="[[item.name]]"></dmp-paper-checkbox>
             </div>
             <div class="center_column">
               <paper-dropdown-menu
@@ -133,7 +156,7 @@ class DmpInputScheduler extends MutableData(PolymerElement) {
 
             </div>
             <div class="right_column">
-              <div data-text-disabled$="[[!item.checked]]">Todo el día</div>
+            <div class='rightBox' data-text-disabled$="[[!item.checked]]">Todo el día</div>
               <dmp-paper-checkbox data-index$="[[index]]" on-click="_fullDayClicked" disabled="[[!item.checked]]" class="checks" checked="{{item.fulldayCheck}}"></dmp-paper-checkbox>              
             </div>
           </div>
@@ -149,16 +172,18 @@ class DmpInputScheduler extends MutableData(PolymerElement) {
       value: {
         type: Array,
         value: [],
+        notify: true
       },
       /** Msg error. It shows when component validate and return invalid */
       errorMsg: {
         type: String,
         value: "Please fill required fields"
       },
-      /** Proverty save the validation value */
+      /** Property save the validation value */
       invalid: {
         type: Boolean,
-        value: false
+        value: false,
+        notify: true
       },
       /** This prop is a flag to validate if required fields of the component are filled */
       required: {
