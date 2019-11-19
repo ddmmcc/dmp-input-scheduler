@@ -334,7 +334,7 @@ class DmpInputScheduler extends MutableData(PolymerElement) {
     this._shouldCheckAllDay(this.value[indexOfValue].fromSelectedIndex, this.value[indexOfValue].toSelectedIndex, indexOfValue);
     this._shouldCheckAllDaysSame(this.value);
     if ( this.autoValidate) {
-      this.set(`value.${indexOfValue}.invalid`, this.validateRow(this.value[indexOfValue].checked, this.value[indexOfValue].fromSelectedIndex, this.value[indexOfValue].toSelectedIndex));
+      this.set(`value.${indexOfValue}.invalid`, !this.validateRow_leftMinorToRight(this.value[indexOfValue].checked, this.value[indexOfValue].fromSelectedIndex, this.value[indexOfValue].toSelectedIndex));
     }    
   }
 
@@ -364,8 +364,8 @@ class DmpInputScheduler extends MutableData(PolymerElement) {
     this.set("allDaysTheSame", result);
   }
   
-  validateRow(checked, fromValue, toValue) {
-    return (checked && !(fromValue < toValue));
+  validateRow_leftMinorToRight(checked, fromValue, toValue) {
+    return !(checked && !(fromValue < toValue));
   }
 
   reset() {
@@ -376,29 +376,38 @@ class DmpInputScheduler extends MutableData(PolymerElement) {
   validate() {
     this.showRequiredError = false;
     this.prune();
-    this._validateRequired(this.value);
-    this._validateRanges(this.value);
+    const requiredResult = this._validateRequired(this.value);
+    const rangesResult = this._validateRanges(this.value);
     // tengo que validar on focus, y tiene que vigilar, que todos los elementeos estén dentro de rango y hacer un prune
-
+    return requiredResult && rangesResult;
   }
 
   _validateRequired(items) {
-    const resultInvalid = !items.filter(item => item.fromSelectTime && item.toSelectTime)[0];
-    this.showRequiredError = resultInvalid;
-    this.invalid = this.invalid && !resultInvalid ? this.invalid : resultInvalid;
+    let result = true;
+    if ( this.required) {
+      const resultInvalid = !items.filter(item => {
+        let result = item.fromSelectTime && item.toSelectTime
+        return result;
+      })[0];
+      this.showRequiredError = resultInvalid;
+      this.invalid = this.invalid && !resultInvalid ? this.invalid : resultInvalid;
+      result = !this.invalid;
+    }
+    return result;
   }
 
   /** validate if from is minor than to */
   _validateRanges(items) {
     this.invalid = false;
     items.forEach((item, index) => {
-      const result = this.validateRow(item.checked, item.fromSelectedIndex, item.toSelectedIndex);
-      if ( result ) {
-        this.invalid = result;
+      const result = this.validateRow_leftMinorToRight(item.checked, item.fromSelectedIndex, item.toSelectedIndex);
+      if ( !result ) {
+        this.invalid = !result;
       }
-      this.set(`value.${index}.invalid`, result)
+      this.set(`value.${index}.invalid`, !result)
       //item.invalid = item.checked && !(item.fromSelectedIndex < item.toSelectedIndex)
     });
+    return !this.invalid;
   }
 
   prune() {
@@ -408,7 +417,6 @@ class DmpInputScheduler extends MutableData(PolymerElement) {
   }
 
   _constructValue(days) {
-    console.log("me he ejecutado");
     this.value = days.map((item) => {return {name: item, checked: false} });
   }
 
