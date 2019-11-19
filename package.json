@@ -34,5 +34,5 @@
       "pre-commit": "rm CHANGELOG.md && npm run changelog && git add CHANGELOG.md"
     }
   },
-  "version": "0.1.2"
+  "version": "0.1.3"
 }
