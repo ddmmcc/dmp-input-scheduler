@@ -19,8 +19,8 @@
     "@webcomponents/webcomponentsjs": "^2.0.0",
     "chai": "^4.2.0",
     "generate-changelog": "^1.8.0",
-    "husky": "^3.0.9",
-    "mocha": "^6.1.4",
+    "husky": "^9.1.7",
+    "mocha": "^11.7.5",
     "polymer-cli": "^1.9.11",
     "wct-mocha": "^1.0.1"
   },
